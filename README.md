@@ -69,8 +69,44 @@ Faker instance used in the project (or at least an instance with the custom
 providers added to it).
 
 If using Laravel, FakerStan will automatically resolve the faker instance from
-the container using the `fake()` helper function. If not using Laravel, you can
-specify a custom factory class in the `phpstan.neon(.dist)` configuration file:
+the container using the `fake()` helper function.
+
+If not using Laravel, but you are using a framework or environment that has a PSR-11
+compliant DI container (and assuming this container is configured via a PHP file), you
+can use the PsrContainerFakerProviderFactory.
+
+```neon
+parameters:
+  fakerstan:
+    fakerProviderFactory: CalebDW\Fakerstan\PsrContainerFakerProviderFactory
+    psrProvider:
+      phpContainerPath: /path/to/container.php
+      ...
+```
+
+The parameters that can be set are:
+* `phpContainerPath`: the path to the PHP file that configures the container.
+* `setsVariable`: if the file that configures the container assigns it to a global variable,
+this parameter is used to indicate the name of that variable. If the container file returns
+the container itself, set this parameter is null (which is the default).
+* `containerFakerId`: the ID that the container uses for retrieving the Faker Generator. By
+default, this parameter is the Generator's class name (ie. `Faker\Generator`).
+
+If using Symfony, for example, you could use something like:
+
+```neon
+parameters:
+  fakerstan:
+    fakerProviderFactory: CalebDW\Fakerstan\PsrContainerFakerProviderFactory
+    psrProvider:
+      phpContainerPath: /opt/project/var/cache/dev/App_KernelDevDebugContainer.php
+```
+
+to use the PsrContainerFakerProviderFactory and set the path to the Symfony container. The default
+values for the additional parameters are correct for Symfony.
+
+If not using Laravel or some other PSR-11 compliant container, you can specify a custom
+factory class in the `phpstan.neon(.dist)` configuration file:
 
 ```neon
 parameters:
