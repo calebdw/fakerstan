@@ -56,7 +56,7 @@ final class ProviderExtension implements MethodsClassReflectionExtension
                 continue;
             }
 
-            $this->methods[$key] = $methodReflection;
+            $this->methods[$key] = FakerMethodReflection::fromReflection($methodReflection);
 
             return true;
         }
